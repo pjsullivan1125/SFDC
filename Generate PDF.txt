@@ -1,0 +1,28 @@
+<apex:page standardController="Case" renderAs="pdf" applyBodyTag="false">
+String yourFileNameName = 'nameofFile.pdf' ;
+
+Apexpages.currentPage().getHeaders().put( 'content-disposition', 'inline; filename=' + yourFileName );
+    <head>
+        <style> 
+            body { font-family: 'Arial Unicode MS'; }
+            .companyName { font: bold 14px; color: Black; }  
+        </style>
+    </head>
+    <body>
+        <center>
+        <h1>Patricks Bakery LLC</h1>
+        </center>
+        <br/>
+        <br/>
+        <apex:panelGrid columns="0" width="100%">
+            <apex:outputText value="{!Case.Subject}" styleClass="companyName"/>
+            <apex:outputText value="Category Label: {!Case.Category__c}" styleClass="companyName"/>
+            <apex:outputText value="This PDF was created on {!NOW()}"> </apex:outputText>
+            <br/> 
+            <br/>
+            <apex:detail title="true" showChatter="true"/>
+        </apex:panelGrid>
+     
+    </body>
+</apex:page>
+                
