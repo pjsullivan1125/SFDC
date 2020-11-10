@@ -1,0 +1,33 @@
+//The Purpose of this was to write a trigger where I create a task when an opportunity is listed as closed won. 
+//Originally I thought that we'd make an opportunity list here but in retrospect, we'd make a task list here. 
+//So really, we create the task list first → then we do a SOQL for an opportunity to determine that this is related to the new trigger
+//and then its also closed won. 
+//tasklist.add creates the task with the following fields
+//If the tasklist's side is greater than 0, then insert the tasklist 
+
+trigger ClosedOpportunityTrigger on Opportunity (after insert, after update) {
+    List<Task> taskList = new List<Task>();
+    //List<Opportunity> oppListTrail = new List <Opportunity>();
+    For (Opportunity o: [SELECT Id, Name, StageName FROM Opportunity
+                        WHERE Id IN :Trigger.new AND
+                         (StageName  = 'Closed Won')]) {
+                        
+                             
+                         taskList.add(new Task(Subject.    ='Follow Up Test Task',
+                                                  Status   = 'Not Started',
+                                                  Priority = 'Normal',
+                                                  WhatId   = o.Id));
+                         }
+    If (taskList.size() > 0) {
+        Insert taskList;
+    }
+}
+
+
+
+
+
+//The Apex trigger must be called 'ClosedOpportunityTrigger'
+//With 'ClosedOpportunityTrigger' active, if an opportunity is inserted or updated with a stage of 'Closed Won', it will have a task created with the subject 'Follow Up Test Task'.
+//To associate the task with the opportunity, fill the 'WhatId' field with the opportunity ID.
+//This challenge specifically tests 200 records in one operation.
