@@ -1,0 +1,20 @@
+//This is from Pluralsight If Statements: How do they work?
+trigger AssignLeadGrade on Lead (before insert, before update) {
+    For (lead mylead : Trigger.new){
+        if (myLead.Score__c != null) {
+        If (myLead.Score__c == 100) {
+            Mylead.Grade__c = 'A+';
+            //this means that if the lead's score is 100, then give it the grade of A
+            //Double == for the comparison field
+            //Single = for the assignment of the if statement
+        } else if (myLead.score__c >= 90) {
+            myLead.Grade__c = 'A';
+        } else if (myLead.score__c >= 80) {
+            myLead.Grade__c = 'B';
+        } else {
+        myLead.Grade__c     = 'F';
+        myLead.Status       = 'Closed - Lost';
+    }
+    }
+}
+}
