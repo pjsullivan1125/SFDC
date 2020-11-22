@@ -1,0 +1,58 @@
+// The purpose of this trigger is to say here's a picklist of our 3 competitors (called Competitor_1__c) (1,2,3)
+// Of these three competitors in the competitor field, look at the competitor_price_x__c (1,2,3)
+// Then display the competitor with the lowest price
+// 
+// 
+// 
+// Before trigger used since we don't need access to system fields. Don't need DML because before & trigger.new
+// 
+// We're going to use loops because if we used if statements, this works but if we add more than the 3 
+// current cometitor fields, then it's going to get complex to read and super long. So we'll use a loop
+// so that it's looping through all of our competitor prices and then we're using a list. Since we're using
+// a loop, we can say the lowest price is the second of the three. Then grab that competitor's name. This is
+// grabbing the list of all the competitor names and all the prices and then put them together 
+
+trigger LeadingCompetitor on Opportunity (before insert, before update) {
+    
+    for (Opportunity opp : Trigger.new) {
+        // Add all our prices in a list in order of competitor
+        List<Decimal> CompetitorPrices = new List<Decimal>();
+        competitorPrices.add(opp.Competitor_1_Price__c);
+        competitorPrices.add(opp.Competitor_2_Price__c);
+        competitorPrices.add(opp.Competitor_3_Price__c);
+        
+        // Add all our copmetitors in a list in order
+        // Competitor prices and competitors are in the same order 
+        List<String> competitors = new List<String> ();
+        competitors.add(opp.Competitor_1__c);
+        competitors.add(opp.Competitor_2__c);
+        competitors.add(opp.Competitor_3__c);
+        
+        // Loop through all competitors to find the position of the lowest price
+        // for loop allows us to have i as a varible and we can then loop through it all
+        // 
+        // competitorPrices.size i++ ← this would be ideal since we can add new picklist fields in the future
+        // and this loop already covers it 
+        // changing if (lowestPrice == null || currentPrice < lowestPrice) from < to > gives then the greater 
+        
+        Decimal lowestPrice;
+        Integer lowestPricePosition;
+        for (Integer i = 0; i < competitorPrices.size(); i++) {
+            Decimal currentPrice = competitorPrices.get(i);
+            if (lowestPrice == null || currentPrice < lowestPrice) {
+                lowestPrice = currentPrice;
+                lowestPricePosition = i;
+            }
+            
+        }
+        //Populate the leading competitor field with the competitor matching the lowest price position
+        opp.Leading_Competitor__c = competitors.get(lowestPricePosition);
+        
+        //Populate the competitor's Name plus their price in a field 
+        //Takes the competitor name and price field and fills it with the leading competitor's name
+        //then adds in the lowest price variable from above
+        opp.Competitor_Name_and_Price__c = opp.Leading_Competitor__c + ' ' + '$' + lowestPrice;
+        
+    }
+
+}
